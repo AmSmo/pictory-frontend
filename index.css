@@ -14,3 +14,55 @@ html,
 	        border: 2px solid #fff; 
 	        box-shadow: 3px 3px 10px #888; 
 }	
+    .padding {
+    padding: 0px 25px 25px 50px;
+    }
+    
+    .header {
+        padding: 10px;
+        text-align: left;
+        background: white;
+        color: black;
+        font-family: Montserrat;
+        word-spacing: 60px;
+        font-size: 30px;
+      }
+
+      .take
+    {
+        font-family: Montserrat;
+        font-weight: bold;
+        font-size: 9vw;
+        color: #0499c3;
+        line-height: 70%;
+    }
+
+    .picture
+    {
+        font-family: Montserrat;
+        font-weight: bold;
+        font-size: 9vw;
+        color: #04363f;
+        line-height: 90%;
+    }
+
+    .para
+    {
+        font-family: Montserrat;
+        font-size: 1.5vw;
+        color: #414042;
+        line-height: 100%;
+        width: 500px;
+        padding-bottom: 30px;
+    }
+
+    .button {
+        background-color: #4CAF50; /* Green */
+        border: none;
+        color: white;
+        padding: 15px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+      }
