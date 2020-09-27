@@ -2,6 +2,7 @@ const main = document.querySelector("main")
 document.addEventListener("DOMContentLoaded", e =>{
     clickHandler();
     buildform(); 
+    map();
     // loginForm();
 })
 
@@ -96,4 +97,31 @@ function buildform(){
         <input type="submit" class="upload-image">`
     form.innerHTML=formBody
     main.append(form)
+}
+
+map = () =>{
+    var map = L.map('map').setView([40.727063, -74.096523], 13);
+    L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoiYW1zbW8iLCJhIjoiY2tmbDl5d3ptMHN4cjJydDQ5c2Y0YjY5byJ9.0_1l5ZMWrrlNlIwvaazcwQ', {
+        maxZoom: 18,
+        id: 'mapbox/streets-v10',
+        tileSize: 512,
+        zoomOffset: -1
+    }).addTo(map);
+    var greenIcon = L.icon({
+        shadowUrl: 'marker.png',
+        iconUrl: 'test.jpg',
+
+        shadowSize: [38, 95], // size of the shadow
+        iconSize: [30, 45], // size of the shadow
+        shadowAnchor: [22, 94], // point of the shadow which will correspond to marker's location
+        iconAnchor: [18, 85],  // the same for the shadow
+        popupAnchor: [-3, -76] // point from which the popup should open relative to the iconAnchor
+    });
+    var marker = L.marker([40.727063, -74.096523], { icon: greenIcon }).addTo(map);
+    function onMapClick(e) {
+        alert("You clicked the map at " + e.latlng);
+    }
+
+
+    map.on('click', onMapClick);
 }
