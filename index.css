@@ -56,7 +56,7 @@ html,
         padding-bottom: 30px;
     }
 
-    .button {
+    .button, .upload-image {
         background-color: #04363f;
         font-family: Montserrat; 
         border: none;
