@@ -35,11 +35,79 @@ function editPhoto(photo){
     }
     fetch(`http://localhost:3000/photos/${photoId}`, configObj)
     .then(resp => resp.json())
-    .then(console.log)
-
-    console.log(photo)
-
+    .then(data=> {
+        renderPossiblePlaces(data)})
 }
+
+function renderPossiblePlaces(data){
+    console.log(data)
+    photo = data.photo
+    if (data.found === "none"){
+        main.innerHTML = ""
+        renderCurrentUpload(photo)
+    }else{
+        places = data.places
+        main.innerHTML=""
+        renderCurrentUpload(photo)
+        for (let place of places){
+            renderPlace(place)
+        }
+    ;
+    }
+}
+
+function renderCurrentUpload(photo){
+    let currentUploadContainer = document.createElement("div")
+    currentUploadContainer.classList.add("current-upload")
+    let currentImage = document.createElement("img")
+    currentImage.style.maxWidth = "150px"
+    currentImage.src = photo.image_url
+    let currentName = document.createElement("h3")
+    currentName.textContent = `Adding Photo: ${photo.name}`
+    let currentLocation = document.createElement("p")
+    currentLocation.textContent = `Longitude: ${photo.longitude}, Latitude: ${photo.latitude}`
+    currentUploadContainer.append(currentImage)
+    currentUploadContainer.append(currentName)
+    currentUploadContainer.append(currentLocation)
+    currentUploadContainer.append(createPlaceForm(photo))
+    main.append(currentUploadContainer)
+}
+
+function createPlaceForm(photo){
+    let form = document.createElement("form")
+    form.classList.add("new-location")
+    let formBody = `
+    <label for="place-name">Location Name</label>
+    <input type="text" id="place-name" name="name" required>
+    <input type="hidden" name="longitude" value=${photo.longitude}>
+    <input type="hidden" name="latitude" value=${photo.latitude}>
+    <input type="submit" value="Add Location" class="add-location">`
+    form.innerHTML= formBody
+    return form
+}
+
+function renderPlace(place){
+    let currentPlace = place
+    let placeDiv = document.createElement("div")
+    placeDiv.dataset.placeId = place.id
+    let placeImage = document.createElement("img")
+    placeImage.style.maxWidth = "200px"
+    placeImage.classList.add("place-image")
+    placeImage.src = place.photos[0].image_url
+    let placeName = document.createElement("h3")
+    placeName.textContent = place.name
+    let placeLocation = document.createElement("p")
+    placeLocation.textContent = `Longitude: ${place.longitude}, Latitude: ${place.latitude}`
+    placeDiv.append(placeImage)
+    placeDiv.append(placeName)
+    placeDiv.append(placeLocation)
+    let placeJoin = document.createElement("button")
+    placeJoin.textContent = "Join this Location"
+    placeJoin.dataset.placeId = place.id
+    placeDiv.append(placeJoin)
+    main.append(placeDiv)
+}
+
 function uploadPhotoLook(){
     main.innerHTML=`
     <img src="assets/photoguy.png" align="right" alt="Photo Guy" width="600"
