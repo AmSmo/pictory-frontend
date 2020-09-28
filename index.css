@@ -57,7 +57,8 @@ html,
     }
 
     .button {
-        background-color: #4CAF50; /* Green */
+        background-color: #04363f;
+        font-family: Montserrat; 
         border: none;
         color: white;
         padding: 15px 32px;
@@ -65,4 +66,35 @@ html,
         text-decoration: none;
         display: inline-block;
         font-size: 16px;
+        border-radius: 13px;
+      }
+
+      .formText{
+          font-family: Montserrat;
+      }
+
+      ::-ms-browse {
+        background-color: #0499c3;
+        font-family: Montserrat; 
+        border: none;
+        color: white;
+        padding: 15px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        border-radius: 13px;
+      }
+
+      ::-webkit-file-upload-button {
+        background-color: #0499c3;
+        font-family: Montserrat; 
+        border: none;
+        color: white;
+        padding: 15px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        border-radius: 13px;
       }
