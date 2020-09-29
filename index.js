@@ -17,8 +17,28 @@ submitHandler = () => document.addEventListener("submit", e =>{
         login(e.target.username.value)
     }else if (e.target.classList.contains("edit-photo")){
         editPhoto(e.target)
+    }else if(e.target.classList.contains("new-location")){
+        newLocation(e.target)
     }
 })
+
+function newLocation(form){
+    let locationName = form.name.value
+    let locationLatitude = parseFloat(form.latitude.value)
+    let locationLongitude = parseFloat(form.longitude.value)
+    let photoId = parseInt(document.querySelector(".current-upload").dataset.photoId)
+    let configObj = {
+        method: "POST",
+        headers: {"content-type": "application/json",
+        "accepts": "application/json"},
+        body: JSON.stringify({name: locationName, latitude: locationLatitude, longitude: locationLongitude,
+            photo_id: photoId})
+        }
+        
+    fetch("http://localhost:3000/locations", configObj)
+    .then(resp => resp.json())
+    .then(console.log)
+}
 
 function editPhoto(photo){
     let name = photo.name.value
@@ -59,6 +79,7 @@ function renderPossiblePlaces(data){
 function renderCurrentUpload(photo){
     let currentUploadContainer = document.createElement("div")
     currentUploadContainer.classList.add("current-upload")
+    currentUploadContainer.dataset.photoId = photo.id
     let currentImage = document.createElement("img")
     currentImage.style.maxWidth = "150px"
     currentImage.src = photo.image_url
@@ -103,6 +124,7 @@ function renderPlace(place){
     placeDiv.append(placeLocation)
     let placeJoin = document.createElement("button")
     placeJoin.textContent = "Join this Location"
+    placeJoin.classList.add("join-location")
     placeJoin.dataset.placeId = place.id
     placeDiv.append(placeJoin)
     main.append(placeDiv)
@@ -190,9 +212,6 @@ function editPhotoForm(){
 function uploadPhoto(form){
     
     const data = new FormData(form)
-    
-
-
     const configObj = {
         method: "POST",
         headers: { "accepts": "application/json"},
@@ -231,8 +250,24 @@ function clickHandler(){
         
         if (e.target.classList.contains("manage")){
             getCurrentPhoto(e.target.dataset.id)
+        } else if (e.target.classList.contains("join-location")){
+            joinLocation(e.target)
         }
     })
+}
+
+function joinLocation(button){
+    let locationId = parseInt(button.dataset.placeId)
+    let photoId = parseInt(document.querySelector(".current-upload").dataset.photoId)
+    let configObj ={
+        method: "POST",
+        headers: {"content-type": "application/json",
+    "accepts": "application/json"},
+        body: JSON.stringify({location_id: locationId, photo_id: photoId})
+    }
+    fetch("http://localhost:3000/location_photos/", configObj)
+    .then(resp => resp.json())
+    .then(console.log)
 }
 
 function loginForm(){
