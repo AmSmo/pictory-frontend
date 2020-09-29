@@ -37,7 +37,7 @@ function newLocation(form){
         
     fetch("http://localhost:3000/locations", configObj)
     .then(resp => resp.json())
-    .then(console.log)
+    .then(data => joinLocation(data))
 }
 
 function editPhoto(photo){
@@ -165,7 +165,7 @@ function managePhotoLook(photo){
     if (photo.longitude && photo.latitude){
         form.longitude.value = photo.longitude;
         form.latitude.value = photo.latitude;
-        map(photo.longitude, photo.latitude, photo.image_url, 13)
+        map(photo.longitude, photo.latitude, photo.image_url, 15)
     }else{
         map(-98.5556199, 39.8097343, photo.image_url, 3)
     }
@@ -252,8 +252,52 @@ function clickHandler(){
             getCurrentPhoto(e.target.dataset.id)
         } else if (e.target.classList.contains("join-location")){
             joinLocation(e.target)
+        } else if (e.target.classList.contains("single-photo")){
+            renderBigPhoto(e.target)
         }
     })
+}
+
+function renderBigPhoto(photo){
+    main.innerHTML = ""
+    const photoId = photo.dataset.photoId
+    fetch(`http://localhost:3000/photos/${photoId}`)
+    .then(resp => resp.json())
+    .then(console.log)
+}
+
+function individualPhotoPage(photo){
+    const photoContainer = document.createElement("div")
+    const title = document.createElement("h2")
+    title.textContent = photo.name
+    const image = document.createElement("img")
+    image.src = photo.image_url
+    const caption = document.createElement("h3")
+    caption.textContent = photo.caption
+    const date = document.createElement("p")
+    date.textContent= (new Date(photo.date)).toDateString()
+    const credit = document.createElement("h6")
+    credit.innerHTML = `Photo Credit: <strong></strong>`
+    if (photo.poster){
+        const poster = credit.querySelector("strong")
+        poster.textContent = photo.poster.username
+        poster.dataset.userId = photo.poster.id
+    }else{
+        const poster = "Anonymous"
+    }
+    photoContainer.append(title)
+    photoContainer.append(image)
+    photoContainer.append(caption)
+    photoContainer.append(date)
+    photoContainer.append(credit)
+    if (photo.comments.length > 0){
+        for (let comment of photo.comments){
+        renderComments(comment)}
+    }
+}
+
+function renderComments(comment){
+    
 }
 
 function joinLocation(button){
@@ -267,7 +311,7 @@ function joinLocation(button){
     }
     fetch("http://localhost:3000/location_photos/", configObj)
     .then(resp => resp.json())
-    .then(console.log)
+    .then(data => joinedLocationRender(data) )
 }
 
 function loginForm(){
@@ -294,6 +338,40 @@ function login(username){
     .catch(console.log)
 }
 
+function joinedLocationRender(data){
+    let places = data.photos
+    main.innerHTML= ""
+    let title = document.createElement("h2")
+    title.innerHTML = data.name
+    let locationP = document.createElement("p")
+    locationP.textContent = `Longitude: ${data.longitude}, Latitude: ${data.latitude}`
+    main.append(title)
+    main.append(locationP)
+    for (let place of places){
+        main.append(renderPhotoInfo(place))
+    }
+
+}
+
+function renderPhotoInfo(photo){
+    debugger
+    let photoDiv = document.createElement("div")
+    photoDiv.classList.add("single-photo")
+    let photoImg = document.createElement("img")
+    photoImg.dataset.photoId = photo.id
+    photoImg.style.maxWidth="200px"
+    photoImg.src = photo.image_url
+    let photoName = document.createElement("h3")
+    photoName.textContent = photo.name
+    let datePhoto = (new Date(photo.date)).toDateString()
+    let dateP = document.createElement("p")
+    dateP.textContent = datePhoto
+    photoDiv.append(photoImg)
+    photoDiv.append(photoName)
+    photoDiv.append(dateP)
+    return photoDiv
+}
+
 function uploadForm(){
     const form = document.createElement("form")
     form.classList.add(".upload-form")
@@ -314,21 +392,27 @@ map = (longitude, latitude, img, zoom = 13) =>{
         zoomOffset: -1
     }).addTo(map);
     let imageIcon = L.icon({
-        shadowUrl: 'marker.png',
+        shadowUrl: './assets/squaremarker.png',
         iconUrl: img,
 
-        shadowSize: [38, 95], // size of the shadow
-        iconSize: [30, 45], // size of the shadow
+        shadowSize: [75, 95], // size of the shadow
+        iconSize: [30, 47], // size of the shadow
         shadowAnchor: [22, 94], // point of the shadow which will correspond to marker's location
-        iconAnchor: [18, 85],  // the same for the shadow
+        iconAnchor: [0, 87],  // the same for the shadow
         popupAnchor: [-3, -76] // point from which the popup should open relative to the iconAnchor
     });
     if (zoom != 3){
         let marker = L.marker([latitude, longitude], { icon: imageIcon });
-        map.addLayer(marker)}
+        function markerInfo(e) {
+            console.dir(e)
+            debugger
+        }
+        marker.addTo(map).bindPopup(`<img src=${img} width="200px"><p>Something</p>`)
+            // .on('click', e => markerInfo(e.target))
+        // map.addLayer(marker)}
+    }
     function onMapClick(e) {
         if (document.querySelector("#map").classList.contains("edit-map")){
-            alert("You clicked the map at " + e.latlng);
             map.eachLayer(layer => {
                 if(layer.options.icon){
                     map.removeLayer(layer)
@@ -336,13 +420,15 @@ map = (longitude, latitude, img, zoom = 13) =>{
             let newLat = e.latlng["lat"]
             let newLong = e.latlng["lng"]
             marker = L.marker([newLat, newLong], { icon: imageIcon })
+            marker.addTo(map).bindPopup(`<img src=${img} width="200px"><p>Something</p>`)
             document.querySelector("#latitude").value = e.latlng["lat"].toFixed(4)
             document.querySelector("#longitude").value = e.latlng["lng"].toFixed(4)
-            map.addLayer(marker)
+            marker.addTo(map)
 
             }
     }
 
 
     map.on('dblclick', onMapClick);
+    
 }
