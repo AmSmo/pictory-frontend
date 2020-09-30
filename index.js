@@ -312,7 +312,7 @@ function editCommentForm(button){
     let form = document.querySelector(".comment-form")
     let commentDiv = form.previousElementSibling
     form.className = "edit-comment-form"
-    debugger
+    // debugger
     form.comment.value = commentDiv.firstChild.textContent
     commentDiv.remove()
 }
@@ -354,6 +354,7 @@ function myPhotoLook(){
 function logout(){
     loggedUser = 0
     let picky = document.querySelector(".header")
+    main.classList.remove("fade-in-fwd")
     picky.remove()
     loginForm()
 }
@@ -478,7 +479,7 @@ function loginForm(){
         <img src="assets/loginlogo.png" alt="picture" width="250"> `
     const formBody = `
         <input type="text" placeholder="username" name="username" required>
-        <input type="submit" classList.add("button")>`
+        <input type="submit" class="button")>`
     form.innerHTML = formBody
     formDiv.append(picDiv)
     formDiv.append(intro)
@@ -508,7 +509,9 @@ function login(username){
         <p><span>Home</span> <span>Locations</span></p>
     </div>`
         let msg = loggedIn(data)
-        uploadPhotoLook(msg)})
+        uploadPhotoLook(msg)
+        main.classList.add("fade-in-fwd")
+        header.classList.add("fade-in-fwd")})
     .catch(console.log)
 }
 
@@ -604,7 +607,7 @@ const map = (longitude, latitude, img, zoom = 13) =>{
         let marker = L.marker([latitude, longitude], { icon: imageIcon });
         function markerInfo(e) {
             console.dir(e)
-            debugger
+            
         }
         marker.addTo(map).bindPopup(`<img src=${img} width="200px">`)
             // .on('click', e => markerInfo(e.target))
