@@ -34,9 +34,13 @@ function newLocation(form){
             photo_id: photoId})
         }
         
+        debugger
     fetch("http://localhost:3000/locations", configObj)
     .then(resp => resp.json())
-    .then(data => joinLocation(data))
+        .then(data => {
+            joinedLocationRender(data)
+        console.log(data)
+    })
 }
 
 function editPhoto(photo){
@@ -258,8 +262,44 @@ function clickHandler(){
             joinLocation(e.target)
         } else if (e.target.classList.contains("single-photo")){
             renderBigPhoto(e.target)
+        } else if (e.target.classList.contains("logout")){
+            logout()
+        } else if (e.target.classList.contains("my-photos")){
+            myPhotoLook()
+        } else if (e.target.classList.contains("upload-page")){
+            uploadPhotoLook()
         }
     })
+}
+
+function myPhotoLook(){
+    main.innerHTML = ""
+    const configObj = {
+        method: "POST",
+        headers: {
+            "content-type": "application/json",
+            "accepts": "application/json"
+        },
+        body: JSON.stringify({
+            user_id: loggedUser
+        })
+    }
+    
+    fetch("http://localhost:3000/myphotos", configObj)
+    .then(resp => resp.json())
+    .then(photos => {
+        for (let photo of photos){
+            main.append(renderPhotoInfo(photo))
+        }
+    })
+}
+
+function logout(){
+    loggedUser = 0
+    let picky = document.querySelector(".header img")
+    delete picky.dataset.username
+    delete picky.dataset.userId
+    loginForm()
 }
 
 function renderBigPhoto(photo){
@@ -276,17 +316,20 @@ function individualPhotoPage(photo){
     title.textContent = photo.name
     const image = document.createElement("img")
     image.src = photo.image_url
+    image.style.maxWidth = "350px"
     const caption = document.createElement("h3")
     caption.textContent = photo.caption
     const date = document.createElement("p")
     date.textContent= (new Date(photo.date)).toDateString()
     const credit = document.createElement("h6")
     credit.innerHTML = `Photo Credit: <strong></strong>`
-    if (photo.poster){
-        const poster = credit.querySelector("strong")
-        poster.textContent = photo.poster.username
-        poster.dataset.userId = photo.poster.id
-        if (photo.poster.id === loggedUser){
+    let poster = photo.posters[0]
+    if (poster){
+        const posterInfo = credit.querySelector("strong")
+        posterInfo.textContent = poster.username
+        posterInfo.dataset.userId = poster.id
+        debugger
+        if (poster.id === loggedUser){
             let deletePhoto = document.createElement("button")
             deletePhoto.classList.add("delete-photo")
             deletePhoto.textContent = "Delete My Photo"
@@ -332,6 +375,7 @@ function renderComments(comment){
 }
 
 function joinLocation(button){
+    debugger
     let locationId = parseInt(button.dataset.placeId)
     let photoId = parseInt(document.querySelector(".current-upload").dataset.photoId)
     let configObj ={
@@ -346,6 +390,7 @@ function joinLocation(button){
 }
 
 function loginForm(){
+    main.innerHTML = ""
     const form = document.createElement("form")
     form.classList.add(".login-form")
     const formBody = `
@@ -367,25 +412,30 @@ function login(username){
     .then(resp => resp.json())
     .then(data =>{
         console.log(data)
-        loggedUser = data.user
+        loggedUser = data.user_id
         let msg = loggedIn(data)
         uploadPhotoLook(msg)})
     .catch(console.log)
 }
 
 function loggedIn(data){
-    document.querySelector(".header img").dataset.userId = data.user
+    let picky = document.querySelector(".header img")
+    picky.dataset.username = data.username
+    picky.dataset.userId = data.user_id
     let welcomeMessage = document.createElement("h2")
     welcomeMessage.textContent= data.message
     let header = document.querySelector(".header")
-    
     let uploadSpan = document.createElement("span")
+    uploadSpan.classList.add("upload-page")
     uploadSpan.textContent = "Upload"
     let myPhotoSpan = document.createElement("span")
+    myPhotoSpan.classList.add("my-photos")
     myPhotoSpan.textContent = "My Photos"
     let myLocSpan = document.createElement("span")
+    myLocSpan.classList.add("my-locations")
     myLocSpan.textContent = "My Locations"
     let logoutSpan = document.createElement("span")
+    logoutSpan.classList.add("logout")
     logoutSpan.textContent = "Logout"
     let innerP = header.querySelector("p")
     innerP.append(uploadSpan)
@@ -396,7 +446,7 @@ function loggedIn(data){
 }
 
 function joinedLocationRender(data){
-    let places = data.photos
+    let photos = data.photos
     main.innerHTML= ""
     let title = document.createElement("h2")
     title.innerHTML = data.name
@@ -404,14 +454,13 @@ function joinedLocationRender(data){
     locationP.textContent = `Longitude: ${data.longitude}, Latitude: ${data.latitude}`
     main.append(title)
     main.append(locationP)
-    for (let place of places){
-        main.append(renderPhotoInfo(place))
+    for (let photo of photos){
+        main.append(renderPhotoInfo(photo))
     }
 
 }
 
 function renderPhotoInfo(photo){
-    debugger
     let photoDiv = document.createElement("div")
     let photoImg = document.createElement("img")
     photoImg.classList.add("single-photo")
@@ -440,7 +489,7 @@ function uploadForm(){
     main.append(form)
 }
 
-map = (longitude, latitude, img, zoom = 13) =>{
+const map = (longitude, latitude, img, zoom = 13) =>{
     var map = L.map('map').setView([latitude, longitude], zoom);
     L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoiYW1zbW8iLCJhIjoiY2tmbDl5d3ptMHN4cjJydDQ5c2Y0YjY5byJ9.0_1l5ZMWrrlNlIwvaazcwQ', {
         maxZoom: 18,
