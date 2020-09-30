@@ -23,10 +23,20 @@ html,body {
         background: white;
         color: #6f7173;
         font-family: Montserrat;
-        word-spacing: 60px;
+        width: 90vw;
         font-size: 30px;
+        display: flexbox;
+        justify-content: space-between;
       }
-
+      .header span{
+        padding: 0 20px;
+      }
+      .header span :first-child{
+        padding-left: 10px;
+      }
+      .header span :last-child{
+        padding-right: 10px;
+      }
       .take
     {
         font-family: Montserrat;

@@ -1,11 +1,10 @@
 const main = document.querySelector("main")
+let loggedUser = 0
 document.addEventListener("DOMContentLoaded", e =>{
-    clickHandler();
-    uploadPhotoLook();
+    clickHandler();  
     submitHandler();
-    // loginForm();
+    loginForm();
 })
-
 
 submitHandler = () => document.addEventListener("submit", e =>{
     e.preventDefault();
@@ -44,14 +43,14 @@ function editPhoto(photo){
     let name = photo.name.value
     let caption = photo.caption.value
     let date = photo.date.value
-    let longitude = photo.longitude.value
-    let latitude = photo.latitude.value
+    let longitude = parseFloat(photo.longitude.value)
+    let latitude = parseFloat(photo.latitude.value)
     let photoId = parseInt(photo.dataset.id)
     let configObj = {
         method: "PATCH",
         headers: {"content-type": "application/json",
         "accepts": "application/json"},
-        body: JSON.stringify({name, caption, date, longitude, latitude})
+        body: JSON.stringify({name, caption, date, longitude, latitude, user_id: loggedUser})
     }
     fetch(`http://localhost:3000/photos/${photoId}`, configObj)
     .then(resp => resp.json())
@@ -62,10 +61,14 @@ function editPhoto(photo){
 function renderPossiblePlaces(data){
     console.log(data)
     photo = data.photo
+    photo.latitude = data.location.latitude
+    photo.longitude = data.location.longitude
     if (data.found === "none"){
         main.innerHTML = ""
+        
         renderCurrentUpload(photo)
     }else{
+        
         places = data.places
         main.innerHTML=""
         renderCurrentUpload(photo)
@@ -77,6 +80,7 @@ function renderPossiblePlaces(data){
 }
 
 function renderCurrentUpload(photo){
+    debugger
     let currentUploadContainer = document.createElement("div")
     currentUploadContainer.classList.add("current-upload")
     currentUploadContainer.dataset.photoId = photo.id
@@ -130,7 +134,7 @@ function renderPlace(place){
     main.append(placeDiv)
 }
 
-function uploadPhotoLook(){
+function uploadPhotoLook(message){
     main.innerHTML=`
     <img src="assets/photoguy.png" align="right" alt="Photo Guy" width="600"
         height="600">
@@ -148,6 +152,9 @@ function uploadPhotoLook(){
             Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidu
             <br />
         </div>`
+        if (message){
+            main.prepend(message)
+        }
         uploadForm();
 }
 
@@ -178,8 +185,6 @@ function managePhotoLook(photo){
     }
     form.dataset.id = photoId
 }
-
-
 
 function editPhotoForm(){
     const form = document.createElement("form")
@@ -238,7 +243,6 @@ function goToManageScreen(data){
     main.append(photo, manageButton)
 }
 
-
 function getCurrentPhoto(id){
     fetch(`http://localhost:3000/photos/${id}`)
     .then(resp => resp.json())
@@ -263,7 +267,7 @@ function renderBigPhoto(photo){
     const photoId = photo.dataset.photoId
     fetch(`http://localhost:3000/photos/${photoId}`)
     .then(resp => resp.json())
-    .then(console.log)
+    .then(data=> individualPhotoPage(data))
 }
 
 function individualPhotoPage(photo){
@@ -282,6 +286,12 @@ function individualPhotoPage(photo){
         const poster = credit.querySelector("strong")
         poster.textContent = photo.poster.username
         poster.dataset.userId = photo.poster.id
+        if (photo.poster.id === loggedUser){
+            let deletePhoto = document.createElement("button")
+            deletePhoto.classList.add("delete-photo")
+            deletePhoto.textContent = "Delete My Photo"
+            credit.append(deletePhoto)
+        }
     }else{
         const poster = "Anonymous"
     }
@@ -292,12 +302,33 @@ function individualPhotoPage(photo){
     photoContainer.append(credit)
     if (photo.comments.length > 0){
         for (let comment of photo.comments){
-        renderComments(comment)}
+            photoContainer.append(renderComments(comment))}
+    }else{
+        let suggestion = document.createElement("div")
+        suggestion.textContent = "Be the first"
+        photoContainer.append(suggestion)
     }
+    let commentButton = document.createElement("button")
+    commentButton.textContent = "Add Comment"
+    commentButton.classList.add("comment-on")
+    photoContainer.append(commentButton)
+    main.append(photoContainer)
 }
 
-function renderComments(comment){
-    
+function renderComments(comment){  
+    let commentContainer = document.createElement("div")
+    commentContainer.classList.add("comment")
+    let commentP = document.createElement("p")
+    commentP.textContent =  comment.comment
+    let attributedTo = document.createElement("p")
+    attributedTo.textContent = comment.poster
+    attributedTo.dataset.userId = comment.poster.id
+
+    commentP.append(attributedTo)
+    commentContainer.append(commentP)
+    return commentContainer
+
+
 }
 
 function joinLocation(button){
@@ -332,10 +363,36 @@ function login(username){
          body: JSON.stringify({username})
     }
     
-    fetch("http://localhost:3000/login/", configObj)
+    fetch("http://localhost:3000/users/", configObj)
     .then(resp => resp.json())
-    .then(console.log)
+    .then(data =>{
+        console.log(data)
+        loggedUser = data.user
+        let msg = loggedIn(data)
+        uploadPhotoLook(msg)})
     .catch(console.log)
+}
+
+function loggedIn(data){
+    document.querySelector(".header img").dataset.userId = data.user
+    let welcomeMessage = document.createElement("h2")
+    welcomeMessage.textContent= data.message
+    let header = document.querySelector(".header")
+    
+    let uploadSpan = document.createElement("span")
+    uploadSpan.textContent = "Upload"
+    let myPhotoSpan = document.createElement("span")
+    myPhotoSpan.textContent = "My Photos"
+    let myLocSpan = document.createElement("span")
+    myLocSpan.textContent = "My Locations"
+    let logoutSpan = document.createElement("span")
+    logoutSpan.textContent = "Logout"
+    let innerP = header.querySelector("p")
+    innerP.append(uploadSpan)
+    innerP.append(myPhotoSpan)
+    innerP.append(myLocSpan)
+    innerP.append(logoutSpan)
+    return welcomeMessage
 }
 
 function joinedLocationRender(data){
@@ -356,8 +413,8 @@ function joinedLocationRender(data){
 function renderPhotoInfo(photo){
     debugger
     let photoDiv = document.createElement("div")
-    photoDiv.classList.add("single-photo")
     let photoImg = document.createElement("img")
+    photoImg.classList.add("single-photo")
     photoImg.dataset.photoId = photo.id
     photoImg.style.maxWidth="200px"
     photoImg.src = photo.image_url
@@ -421,8 +478,8 @@ map = (longitude, latitude, img, zoom = 13) =>{
             let newLong = e.latlng["lng"]
             marker = L.marker([newLat, newLong], { icon: imageIcon })
             marker.addTo(map).bindPopup(`<img src=${img} width="200px"><p>Something</p>`)
-            document.querySelector("#latitude").value = e.latlng["lat"].toFixed(4)
-            document.querySelector("#longitude").value = e.latlng["lng"].toFixed(4)
+            document.querySelector("#latitude").value = parseFloat(e.latlng["lat"].toFixed(4))
+            document.querySelector("#longitude").value = parseFloat(e.latlng["lng"].toFixed(4))
             marker.addTo(map)
 
             }
