@@ -10,12 +10,13 @@ html,
         }
         
 
-        .leaflet-marker-photo { 
-	        border: 2px solid #fff; 
-	        box-shadow: 3px 3px 10px #888; 
-}	
+    .leaflet-marker-photo { 
+	    border: 2px solid #fff; 
+	    box-shadow: 3px 3px 10px #888; 
+    }	
+
     .padding {
-    padding: 0px 25px 25px 50px;
+      padding: 0px 25px 25px 50px;
     }
     
     .header {
@@ -29,13 +30,13 @@ html,
       }
 
       .take
-    {
+      {
         font-family: Montserrat;
         font-weight: bold;
         font-size: 9vw;
         color: #0499c3;
         line-height: 70%;
-    }
+      }
 
     .picture
     {
@@ -70,8 +71,14 @@ html,
       }
 
       .formText{
-          font-family: Montserrat;
-      }
+        font-family: Montserrat;
+    }
+
+    .introText{
+      font-family: Montserrat;
+      width: 250px;
+      color: #6f7173;
+  }
 
       ::-ms-browse {
         background-color: #0499c3;
@@ -98,3 +105,23 @@ html,
         font-size: 16px;
         border-radius: 13px;
       }
+
+      div.form
+      {
+        display: block;
+        text-align: center;
+      }
+
+      .form
+      {
+        margin: 0;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        -ms-transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%);
+      }
+
+  
+
+      

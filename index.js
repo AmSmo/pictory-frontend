@@ -1,9 +1,9 @@
 const main = document.querySelector("main")
 document.addEventListener("DOMContentLoaded", e =>{
-    clickHandler();
-    uploadPhotoLook();
-    submitHandler();
-    // loginForm();
+    // clickHandler();
+    // uploadPhotoLook();
+    // submitHandler();
+    loginForm();
 })
 
 
@@ -81,7 +81,7 @@ function createPlaceForm(photo){
     <input type="text" id="place-name" name="name" required>
     <input type="hidden" name="longitude" value=${photo.longitude}>
     <input type="hidden" name="latitude" value=${photo.latitude}>
-    <input type="submit" value="Add Location" class="add-location">`
+    <input type="submit" value="Add Location" classList.add("div.form")="add-location">`
     form.innerHTML= formBody
     return form
 }
@@ -113,16 +113,16 @@ function uploadPhotoLook(){
     <img src="assets/photoguy.png" align="right" alt="Photo Guy" width="600"
         height="600">
 
-        <div class="take">
+        <div classList.add("div.form")="take">
             <br />
             Take a
         </div>
         <br />
-        <div class="picture">
+        <div classList.add("div.form")="picture">
             Picture
         </div>
         <br />
-        <div class="para">
+        <div classList.add("div.form")="para">
             Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidu
             <br />
         </div>`
@@ -174,13 +174,13 @@ function editPhotoForm(){
     <br>
     <label for="latitude">Latitude of Photo</label>
     <input type="text" id="latitude" name="latitude" value="" required>
-    <div id="map" class="edit-map">
+    <div id="map" classList.add("div.form")="edit-map">
     </div>
     <br>
     <label for="date">Date of Photo</label>
     <input type="datetime-local" id="date" name="date" value="" required>
     <br>
-    <input type="submit" class="edited-photo">
+    <input type="submit" classList.add("div.form")="edited-photo">
     `
     form.innerHTML= formBody
     
@@ -236,15 +236,28 @@ function clickHandler(){
 }
 
 function loginForm(){
+    const formDiv = document.createElement("div")
+    const picDiv = document.createElement("div")
     const form = document.createElement("form")
+    const intro = document.createElement('p')
+    intro.classList.add("introText")
+    intro.innerText = "Welcome to Pictory please create a username to get started"
+    formDiv.classList.add("form")
+    picDiv.classList.add("logo")
     form.classList.add(".login-form")
+    picDiv.innerHTML = `
+        <img src="assets/loginlogo.png" alt="picture" width="250"> `
     const formBody = `
         <input type="text" placeholder="username" name="username" required>
-        <input type="submit" class="login">`
+        <input type="submit" classList.add("button")>`
     form.innerHTML = formBody
-    main.append(form)
+    formDiv.append(picDiv)
+    formDiv.append(intro)
+    formDiv.append(form)
+    main.append(formDiv)
 
 }
+
 
 function login(username){
     const configObj={method: "POST",
@@ -263,9 +276,8 @@ function uploadForm(){
     const form = document.createElement("form")
     form.classList.add(".upload-form")
     const formBody = `
-        
         <input type="file" id="upload-file" name="photograph" required>
-        <input type="submit" class="upload-image" required>`
+        <input type="submit" classList.add("div.form")="upload-image" required>`
     form.innerHTML=formBody
     main.append(form)
 }
@@ -311,3 +323,11 @@ map = (longitude, latitude, img, zoom = 13) =>{
 
     map.on('dblclick', onMapClick);
 }
+
+
+
+
+
+      
+
+     
