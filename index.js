@@ -18,8 +18,36 @@ submitHandler = () => document.addEventListener("submit", e =>{
         editPhoto(e.target)
     }else if(e.target.classList.contains("new-location")){
         newLocation(e.target)
-    }
+    } else if (e.target.classList.contains("comment-form")) {
+        addComment(e.target)
+    } 
 })
+
+function addComment(form){
+    let photo_id = form.dataset.photoId
+    let comment_text = form.comment.value
+    let configObj = {
+        method: "POST",
+        headers: {"content-type": "application/json",
+    "accepts": "application/json"},
+        body: JSON.stringify({
+            user_id: loggedUser,
+            photo_id,
+            comment_text 
+        })
+    }
+    
+    fetch("http://localhost:3000/comments", configObj)
+    .then(renderBigPhoto(form))
+}
+
+function deletePhoto(button){
+    
+    let configObj = {method: "DELETE"}
+    let id = button.dataset.photoId
+    fetch(`http://localhost:3000/photos/${id}`, configObj)
+    .then(resp => myPhotoLook())
+}
 
 function newLocation(form){
     let locationName = form.name.value
@@ -34,7 +62,7 @@ function newLocation(form){
             photo_id: photoId})
         }
         
-        debugger
+        
     fetch("http://localhost:3000/locations", configObj)
     .then(resp => resp.json())
         .then(data => {
@@ -84,7 +112,7 @@ function renderPossiblePlaces(data){
 }
 
 function renderCurrentUpload(photo){
-    debugger
+    
     let currentUploadContainer = document.createElement("div")
     currentUploadContainer.classList.add("current-upload")
     currentUploadContainer.dataset.photoId = photo.id
@@ -268,8 +296,37 @@ function clickHandler(){
             myPhotoLook()
         } else if (e.target.classList.contains("upload-page")){
             uploadPhotoLook()
+        } else if (e.target.classList.contains("delete-photo")) {
+            deletePhoto(e.target)
+        } else if (e.target.classList.contains("comment-on")){
+            addCommentForm(e.target)
+        } else if (e.target.classList.contains("edit-comment")){
+            editCommentForm(e.target)
         }
     })
+}
+
+function editCommentForm(button){
+    console.dir(button)
+    addCommentForm(button)
+    let form = document.querySelector(".comment-form")
+    let commentDiv = form.previousElementSibling
+    form.className = "edit-comment-form"
+    debugger
+    form.comment.value = commentDiv.firstChild.textContent
+    commentDiv.remove()
+}
+
+function addCommentForm(button){
+    const commentForm = document.createElement("form")
+    commentForm.classList.add("comment-form")
+    commentForm.dataset.photoId = button.dataset.photoId
+    const formBody = `
+    <textarea placeholder="Add a Comment..." name="comment" rows="4" cols="50" required></textarea>
+    <input type="submit" value="comment">`
+    commentForm.innerHTML = formBody
+    button.insertAdjacentElement("beforeBegin", commentForm);
+    button.remove()
 }
 
 function myPhotoLook(){
@@ -328,9 +385,10 @@ function individualPhotoPage(photo){
         const posterInfo = credit.querySelector("strong")
         posterInfo.textContent = poster.username
         posterInfo.dataset.userId = poster.id
-        debugger
+        
         if (poster.id === loggedUser){
             let deletePhoto = document.createElement("button")
+            deletePhoto.dataset.photoId = photo.id
             deletePhoto.classList.add("delete-photo")
             deletePhoto.textContent = "Delete My Photo"
             credit.append(deletePhoto)
@@ -354,6 +412,7 @@ function individualPhotoPage(photo){
     let commentButton = document.createElement("button")
     commentButton.textContent = "Add Comment"
     commentButton.classList.add("comment-on")
+    commentButton.dataset.photoId = photo.id
     photoContainer.append(commentButton)
     main.append(photoContainer)
 }
@@ -364,18 +423,25 @@ function renderComments(comment){
     let commentP = document.createElement("p")
     commentP.textContent =  comment.comment
     let attributedTo = document.createElement("p")
-    attributedTo.textContent = comment.poster
-    attributedTo.dataset.userId = comment.poster.id
-
+    attributedTo.textContent = comment.user.username
+    attributedTo.dataset.userId = comment.user.id
     commentP.append(attributedTo)
     commentContainer.append(commentP)
+    if (loggedUser === comment.user.id){
+        let editButton = document.createElement("button")
+        editButton.textContent = "Edit Comment"
+        editButton.classList.add("edit-comment")
+        editButton.dataset.commentId = comment.id
+        commentContainer.append(editButton)
+    }
+
     return commentContainer
 
 
 }
 
 function joinLocation(button){
-    debugger
+    
     let locationId = parseInt(button.dataset.placeId)
     let photoId = parseInt(document.querySelector(".current-upload").dataset.photoId)
     let configObj ={
@@ -513,7 +579,7 @@ const map = (longitude, latitude, img, zoom = 13) =>{
             console.dir(e)
             debugger
         }
-        marker.addTo(map).bindPopup(`<img src=${img} width="200px"><p>Something</p>`)
+        marker.addTo(map).bindPopup(`<img src=${img} width="200px">`)
             // .on('click', e => markerInfo(e.target))
         // map.addLayer(marker)}
     }
