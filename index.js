@@ -473,6 +473,8 @@ function logout(){
     loggedUser = 0
     let picky = document.querySelector(".header")
     main.classList.remove("fade-in-fwd")
+    let body = document.querySelector("body")
+    body.classList.add("padding")
     picky.remove()
     loginForm()
 }
