@@ -194,7 +194,7 @@ function uploadPhotoLook(message){
         </div>
         <br />
         <div class="para" id="para">
-            Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidu
+        Welcome back
             <br />
         </div>`
         if (message){
