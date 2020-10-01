@@ -181,6 +181,8 @@ html,body {
       {
         width:42%;
         display: inline-block;
+        object-fit: contain;
+        padding-right: 15px;
       }
 
       .clearfix

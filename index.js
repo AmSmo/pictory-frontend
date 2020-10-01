@@ -193,12 +193,13 @@ function uploadPhotoLook(message){
             Picture
         </div>
         <br />
-        <div class="para">
+        <div class="para" id="para">
             Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidu
             <br />
         </div>`
         if (message){
-            main.prepend(message)
+            let container = document.querySelector(".para")
+            container.innerHTML=message.textContent
         }
         uploadForm();
 }
@@ -213,8 +214,7 @@ function managePhotoLook(photo){
     const formContain = document.createElement("div")
 
     currentPhoto.src= photo.image_url
-    currentPhoto.className = "picture"
-    currentPhoto.style.maxWidth= "450px"
+    currentPhoto.className = "picture1"
 
     formContain.className = "flexbox"
 
