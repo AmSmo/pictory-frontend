@@ -147,6 +147,46 @@ html,body {
         transform: translate(-50%, -50%);
       }
 
+      .center1 {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 50%;
+        padding-bottom: 15px;
+        max-height: 400px;
+      }
+
+      .button1 {
+        margin:0 auto;
+        display:block;
+    }
+
+      .flexbox
+      {
+        display: flex;
+        justify-content: center;
+        overflow: auto;
+        padding-bottom: 15px;
+      }
+
+      .map1
+      {
+        width:55%;
+        display: inline-block;
+      }
+
+      .picture1
+      {
+        width:42%;
+        display: inline-block;
+      }
+
+      .clearfix
+      {
+        content: "";
+        clear: both;
+        display: table;
+      }
   
 
 .fade-in-fwd {
