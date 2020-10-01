@@ -84,7 +84,7 @@ html,body {
         padding-bottom: 30px;
     }
 
-    .button, .upload-image {
+    .button, .upload-image, .grey-button {
         background-color: #04363f;
         font-family: Montserrat; 
         border: none;
@@ -107,7 +107,7 @@ html,body {
       color: #6f7173;
   }
 
-      ::-ms-browse {
+      ::-ms-browse, .blue-button {
         background-color: #0499c3;
         font-family: Montserrat; 
         border: none;
@@ -120,7 +120,7 @@ html,body {
         border-radius: 13px;
       }
 
-      ::-webkit-file-upload-button {
+      ::-webkit-file-upload-button, .blue-button {
         background-color: #0499c3;
         font-family: Montserrat; 
         border: none;
@@ -155,7 +155,7 @@ html,body {
         margin-right: auto;
         width: 50%;
         padding-bottom: 15px;
-        max-height: 400px;
+        /* max-height: 400px; */
       }
 
       .button1 {
@@ -181,6 +181,8 @@ html,body {
       {
         width:42%;
         display: inline-block;
+        object-fit: contain;
+        padding-right: 15px;
       }
 
       .clearfix
@@ -320,7 +322,7 @@ html,body {
 
 .search-body div img:hover {
 	transform: scale(1.5);
-  transition-duration: .3s;
+  transition-duration: .5s;
 }
 
 .leaflet-container{
@@ -333,4 +335,19 @@ html,body {
 .my-photo-page{
   display: flex;
   justify-content: space-around;
+}
+
+/* UPLOAD PAGE */
+form.edit-photo input {
+    float: right;
+    width: 200px;
+}
+form.edit-photo {
+    line-height: 2.2;
+    width: 360px;
+    display: block;
+    text-align: end;
+}
+form.edit-photo label {
+  margin-right: 8px;  
 }

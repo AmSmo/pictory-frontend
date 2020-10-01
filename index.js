@@ -193,7 +193,7 @@ function uploadPhotoLook(message){
             Picture
         </div>
         <br />
-        <div class="para">
+        <div class="para" id="para">
             Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidu
             <br />
         </div>`
@@ -214,8 +214,7 @@ function managePhotoLook(photo){
     const formContain = document.createElement("div")
 
     currentPhoto.src= photo.image_url
-    currentPhoto.className = "picture"
-    currentPhoto.style.maxWidth= "450px"
+    currentPhoto.className = "picture1"
 
     formContain.className = "flexbox"
 
@@ -251,23 +250,23 @@ function editPhotoForm(){
     const form = document.createElement("form")
     form.classList.add("edit-photo")
     const formBody = `
-    <label for="photo-name">Name of Photo</label>
+    <label for="photo-name">Name</label>
     <input type="text" id="photo-name" name="name" value="" required>
     <br>
-    <label for="photo-caption">caption of Photo</label>
+    <label for="photo-caption">Caption</label>
     <input type="text" id="photo-caption" name="caption" value="" required>
     <br>
-    <label for="longitude">Longitude of Photo</label>
+    <label for="longitude">Longitude</label>
     <input type="text" id="longitude" name="longitude" value="" required>
     <br>
-    <label for="latitude">Latitude of Photo</label>
+    <label for="latitude">Latitude</label>
     <input type="text" id="latitude" name="latitude" value="" required>
     </div>
     <br>
     <label for="date">Date of Photo</label>
     <input type="datetime-local" id="date" name="date" value="" required>
     <br>
-    <input type="submit" class="edited-photo">
+    <input type="submit" class="edited-photo blue-button">
     `
     form.innerHTML= formBody
     return form
@@ -297,7 +296,7 @@ function goToManageScreen(data){
     photo.style.maxWidth = "600px";
     photo.className = "center1"
     manageButton = document.createElement("button")
-    manageButton.classList.add("manage", "button1")
+    manageButton.classList.add("manage", "button1", "blue-button")
     manageButton.textContent = "Manage Photo Details"
     manageButton.dataset.id= data.id
     main.append(photo, manageButton)
