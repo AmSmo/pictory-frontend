@@ -22,7 +22,7 @@ submitHandler = () => document.addEventListener("submit", e =>{
         addComment(e.target)
     } else if (e.target.classList.contains("edit-comment-form")) {
         commentPatch(e.target)
-    }
+    } 
 })
 
 function commentPatch(edited){
@@ -342,15 +342,21 @@ function clickHandler(){
         } else if (e.target.classList.contains("my-locations")){
             myLocations()
         } else if (e.target.classList.contains("my-locale")) {
-            getLocation(e.target, "mylocation")
-
-            
+            getLocation(e.target, "mylocation")        
         }else if (e.target.classList.contains("back-location")){
             myLocations();
+        } else if (e.target.classList.contains("delete-comment")) {
+            deleteComment(e.target)
         }
 
     })}
 
+    function deleteComment(button){
+        let commentId = button.previousElementSibling.dataset.commentId
+        fetch("http://localhost:3000/comments/"+ commentId, {method: "DELETE"})
+        .then(button.parentElement.remove())
+        
+    }
        
     
     function myLocations(){
@@ -431,8 +437,13 @@ function addCommentForm(button){
     const formBody = `
     <textarea placeholder="Add a Comment..." name="comment" rows="4" cols="50" required></textarea>
     <input type="submit" value="comment">`
+
     commentForm.innerHTML = formBody
+    const deleteButton = document.createElement("button")
+    deleteButton.classList.add("delete-comment")
+    deleteButton.textContent = "Delete Comment"
     button.insertAdjacentElement("beforeBegin", commentForm);
+    commentForm.insertAdjacentElement("afterend", deleteButton)
     button.remove()
 }
 
@@ -452,16 +463,31 @@ function myPhotoLook(){
     fetch("http://localhost:3000/myphotos", configObj)
     .then(resp => resp.json())
     .then(photos => {
+        if (photos.length === 0){
+            promptUpload()
+        }else{
         for (let photo of photos){
             main.append(renderPhotoInfo(photo))
-        }
+        }}
     })
+}
+
+function promptUpload(){
+    let prompt = document.createElement("H2")
+    prompt.textContent = "You don't seem to have any photos, might we suggest you add some?"
+    let uploadButton = document.createElement("button")
+    uploadButton.textContent = "Upload"
+    uploadButton.classList.add("upload-page")
+    main.append(prompt)
+    main.append(uploadButton)
 }
 
 function logout(){
     loggedUser = 0
     let picky = document.querySelector(".header")
     main.classList.remove("fade-in-fwd")
+    let body = document.querySelector("body")
+    body.classList.add("padding")
     picky.remove()
     loginForm()
 }
@@ -482,6 +508,11 @@ function individualPhotoPage(photo){
     image.src = photo.image_url
     image.style.maxWidth = "350px"
     const caption = document.createElement("h3")
+    const locationButton = document.createElement("button")
+    locationButton.textContent = "See Location"
+    locationButton.dataset.placeId = photo.location.id
+    locationButton.classList.add("open-location")
+    
     caption.textContent = photo.caption
     const date = document.createElement("p")
     date.textContent= (new Date(photo.date)).toDateString()
@@ -507,6 +538,7 @@ function individualPhotoPage(photo){
     photoContainer.append(image)
     photoContainer.append(caption)
     photoContainer.append(date)
+    photoContainer.append(locationButton)
     photoContainer.append(credit)
     if (photo.comments.length > 0){
         for (let comment of photo.comments){

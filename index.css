@@ -1,7 +1,9 @@
 html,body {
-			height: 100%;
+			height: 100vh;
       margin: 0;
       font-family: Montserrat, sans-serif;
+     
+
 		}
 	
 #map {
@@ -12,8 +14,8 @@ html,body {
 #background {
     height: 100vh;
     width: 100vw;
-    margin: 0;
-    padding: 0; 
+    margin: 0px;
+    padding: 0px; 
           background-image: url('assets/left.png'), url('assets/right.png');
           background-repeat: no-repeat, no-repeat;
           background-position: left, right;
@@ -263,4 +265,50 @@ html,body {
   100% {
     opacity: 0;
   }
+}
+
+/* SEARCH PHOTOS STYLING */
+
+.search-body{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 75vw;
+  margin: 5px auto;
+  justify-content: space-around;
+}
+
+.search-body div {
+  margin: 30px;
+  display: inline-flexbox;
+  max-width: 250px;
+  
+  height: auto;
+  border: solid 1px black;
+  border-radius: 2px;
+  box-shadow: 1px 1px black, -.2em 0 .4em rgb(101, 97, 97);
+}
+
+.search-body div img {
+  margin: 15px auto;
+  display: block;
+  border: .5px solid black;
+  max-height: 200px;
+}
+
+.search-body button {
+  background-color: #04363f;
+        font-family: Montserrat; 
+        border: none;
+        color: white;
+        padding: 15px 15px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        border-radius: 13px;
+        margin: 0 auto 5px auto;
+        display: block;
+        margin-bottom: 2px;
+
 }
