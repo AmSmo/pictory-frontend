@@ -20,9 +20,23 @@ submitHandler = () => document.addEventListener("submit", e =>{
         newLocation(e.target)
     } else if (e.target.classList.contains("comment-form")) {
         addComment(e.target)
-    } 
+    } else if (e.target.classList.contains("edit-comment-form")) {
+        commentPatch(e.target)
+    }
 })
 
+function commentPatch(edited){
+    
+    let configObj = {
+        method: "PATCH",
+        headers: {"content-type": "application/json",
+        "accepts": "application/json"},
+        body: JSON.stringify({comment: edited.comment.value})
+    }
+    
+    fetch("http://localhost:3000/comments/" + edited.dataset.commentId, configObj)
+        .then(renderBigPhoto(edited.parentElement.nextElementSibling))
+}
 function addComment(form){
     let photo_id = form.dataset.photoId
     let comment_text = form.comment.value
@@ -67,7 +81,7 @@ function newLocation(form){
     .then(resp => resp.json())
         .then(data => {
             joinedLocationRender(data)
-        console.log(data)
+        
     })
 }
 
@@ -91,7 +105,7 @@ function editPhoto(photo){
 }
 
 function renderPossiblePlaces(data){
-    console.log(data)
+    
     photo = data.photo
     photo.latitude = data.location.latitude
     photo.longitude = data.location.longitude
@@ -101,7 +115,7 @@ function renderPossiblePlaces(data){
         renderCurrentUpload(photo)
     }else{
         
-        places = data.places
+        let places = data.places
         main.innerHTML=""
         renderCurrentUpload(photo)
         for (let place of places){
@@ -302,9 +316,88 @@ function clickHandler(){
             addCommentForm(e.target)
         } else if (e.target.classList.contains("edit-comment")){
             editCommentForm(e.target)
+        } else if (e.target.classList.contains("location-search")){
+            locationSearchPage()
+        } else if (e.target.classList.contains("open-location")) {
+            getLocation(e.target)
+        }else if (e.target.classList.contains("back-search")){
+            locationSearchPage(e.target.dataset.longitude, e.target.dataset.latitude)
+        }else if (e.target.classList.contains("follow-location")){
+            followLocation(e.target)
+        }else if (e.target.classList.contains("unfollow-location")){
+            unfollowLocation(e.target)
+        } else if (e.target.classList.contains("my-locations")){
+            myLocations()
+        } else if (e.target.classList.contains("my-locale")) {
+            getLocation(e.target, "mylocation")
+
+            
+        }else if (e.target.classList.contains("back-location")){
+            myLocations();
         }
-    })
-}
+
+    })}
+
+       
+    
+    function myLocations(){
+        let configObj = {method: "POST", 
+        headers: {"content-type": "application/json",
+                "accepts": "application/json"},
+        body: JSON.stringify({user_id: loggedUser})}
+        fetch("http://localhost:3000/mylocations", configObj)
+        .then(resp => resp.json())
+            .then(data => {
+                main.innerHTML =""
+                let resultsContainer = document.createElement("div")
+                resultsContainer.classList.add("search-body")
+                main.append(resultsContainer)
+                renderMylocation(data)})
+    }
+    function followLocation(button){
+        let user_id = button.dataset.userId
+        let location_id = button.dataset.location
+        let configObj = {
+            method: "POST",
+            headers: {"content-type": "application/json",
+        "accepts": "application/json"},
+        body: JSON.stringify({user_id, location_id})
+        }
+        fetch("http://localhost:3000/user_locations", configObj)
+        .then(resp => resp.json())
+        .then(data => joinedLocationRender(data))
+    }
+
+    function unfollowLocation(button){
+        let user_id = button.dataset.userId
+        let location_id = button.dataset.location
+        let configObj = {
+            method: "DELETE",
+            headers: {"content-type": "application/json",
+        "accepts": "application/json"},
+        body: JSON.stringify({user_id, location_id})
+        }
+        fetch("http://localhost:3000/unfollow", configObj)
+            .then(resp => resp.json())
+            .then(data => joinedLocationRender(data))
+    }
+
+
+    function getLocation(button, type= "search"){
+        
+        fetch("http://localhost:3000/locations/" + button.dataset.placeId)
+        .then(resp => resp.json())
+        .then(data => {
+            data.photos = data.photo_order
+            joinedLocationRender(data, type)})
+    }
+function locationSearchPage(longitude = -74, latitude = 40.730610){
+        main.innerHTML=`<div id="map" class="search">
+        </div>
+        <div class="search-body">
+        </div>`
+        map(longitude, latitude, "assets/photoguy.png", 14)
+    }
 
 function editCommentForm(button){
     console.dir(button)
@@ -312,12 +405,13 @@ function editCommentForm(button){
     let form = document.querySelector(".comment-form")
     let commentDiv = form.previousElementSibling
     form.className = "edit-comment-form"
-    // debugger
+    form.dataset.commentId = button.dataset.commentId
     form.comment.value = commentDiv.firstChild.textContent
     commentDiv.remove()
 }
 
 function addCommentForm(button){
+    
     const commentForm = document.createElement("form")
     commentForm.classList.add("comment-form")
     commentForm.dataset.photoId = button.dataset.photoId
@@ -506,7 +600,7 @@ function login(username){
         let header = main.insertAdjacentElement("beforeBegin", headerDiv)
         header.innerHTML = ` <div class="header">
         <img src="assets/logoFont.png" align="right" alt="logo" width="100" height="100">
-        <p><span>Home</span> <span>Locations</span></p>
+        <p><span class="location-search">Locations</span></p>
     </div>`
         let msg = loggedIn(data)
         uploadPhotoLook(msg)
@@ -542,15 +636,40 @@ function loggedIn(data){
     return welcomeMessage
 }
 
-function joinedLocationRender(data){
+function joinedLocationRender(data, type){
+    console.log(data)
     let photos = data.photos
     main.innerHTML= ""
     let title = document.createElement("h2")
     title.innerHTML = data.name
+    let followButton = document.createElement("button")
+    followButton.dataset.userId = loggedUser
+    followButton.dataset.location = data.id
+    
+    if (data.users.find(e => e.id === loggedUser)){
+        followButton.classList.add("unfollow-location")
+        followButton.textContent = "Unfollow Location"
+    }else{
+        followButton.classList.add("follow-location")
+        followButton.textContent = "Follow Location"
+    }
+    let backSearch = document.createElement("button")
+    if (type === "mylocation"){
+        backSearch.className = "back-location"
+        backSearch.textContent = "Back to My Locations"
+
+    }else{
+    backSearch.innerText = "Back to Search"
+    backSearch.classList.add("back-search")
+    backSearch.dataset.longitude = data.longitude
+    backSearch.dataset.latitude = data.latitude}
+    title.append(backSearch)
+    title.append(followButton)
     let locationP = document.createElement("p")
     locationP.textContent = `Longitude: ${data.longitude}, Latitude: ${data.latitude}`
     main.append(title)
     main.append(locationP)
+    
     for (let photo of photos){
         main.append(renderPhotoInfo(photo))
     }
@@ -613,7 +732,8 @@ const map = (longitude, latitude, img, zoom = 13) =>{
             // .on('click', e => markerInfo(e.target))
         // map.addLayer(marker)}
     }
-    function onMapClick(e) {
+    function onMapDblClick(e) {
+        
         if (document.querySelector("#map").classList.contains("edit-map")){
             map.eachLayer(layer => {
                 if(layer.options.icon){
@@ -621,24 +741,97 @@ const map = (longitude, latitude, img, zoom = 13) =>{
                 } })
             let newLat = e.latlng["lat"]
             let newLong = e.latlng["lng"]
-            marker = L.marker([newLat, newLong], { icon: imageIcon })
+            let marker = L.marker([newLat, newLong], { icon: imageIcon })
             marker.addTo(map).bindPopup(`<img src=${img} width="200px"><p>Something</p>`)
             document.querySelector("#latitude").value = parseFloat(e.latlng["lat"].toFixed(4))
             document.querySelector("#longitude").value = parseFloat(e.latlng["lng"].toFixed(4))
             marker.addTo(map)
 
-            }
+        }        else if (document.querySelector("#map").classList.contains("search")){
+                map.eachLayer(layer => {
+                    if (layer.options.icon) {
+                        map.removeLayer(layer)
+                    }
+                })
+                let newLat = e.latlng["lat"]
+                let newLong = e.latlng["lng"]
+                let   marker = L.marker([newLat, newLong], { icon: imageIcon })
+                marker.addTo(map).bindPopup(`<img src=${img} width="200px"><p>Something</p>`)
+                let queryLat = parseFloat(e.latlng["lat"].toFixed(4))
+                let queryLng = parseFloat(e.latlng["lng"].toFixed(4))
+                marker.addTo(map)
+                findPlaces(queryLat,queryLng)}
     }
+    
 
-
-    map.on('dblclick', onMapClick);
+    map.doubleClickZoom.disable(); 
+    map.on('dblclick', onMapDblClick);
+    
     
 }
 
 
 
+function findPlaces(lat,lng){
+    let configObj = {
+        method: "POST",
+        headers: {"content-type": "application/json",
+                "accepts-type": "application/json"},
+                body: JSON.stringify({latitude: lat, longitude: lng})
+    }
+    fetch("http://localhost:3000/locations/search", configObj)
+    .then(resp => resp.json())
+    .then(data => renderSearchResults(data))
+}
+
+function renderSearchResults(data){
+    let searchBody = document.querySelector(".search-body")
+    searchBody.innerHTML = ""
+    if (data.length === 0){
+        searchBody.innerHTML = "<h2>No Results Found</h2>"
+    }
+    
+    for (let place of data) {
+        indiSearch(place)
+    }
+}
+function renderMylocation(data){
+    let searchBody = document.querySelector(".search-body")
+    searchBody.innerHTML = ""
+    if (data.length === 0){
+        searchBody.innerHTML = "<h2>No Results Found</h2>"
+    }
+    
+    for (let place of data) {
+        indiSearch(place)
+    }
+    places = document.querySelectorAll(".open-location")
+    for (let place of places){
+        place.className="my-locale"
+    }
+}
 
 
-      
+function indiSearch(place){
+    let searchBody = document.querySelector(".search-body")
+    let placeDiv = document.createElement("div")
+    placeDiv.dataset.placeId = place.id
+    let placeImage = document.createElement("img")
+    placeImage.style.maxWidth = "200px"
+    placeImage.classList.add("place-image")
+    placeImage.src = place.photos[0].image_url
+    let placeName = document.createElement("h3")
+    placeName.textContent = place.name
+    let placeLocation = document.createElement("p")
+    placeLocation.textContent = `Longitude: ${place.longitude}, Latitude: ${place.latitude}`
+    placeDiv.append(placeImage)
+    placeDiv.append(placeName)
+    placeDiv.append(placeLocation)
+    let placeJoin = document.createElement("button")
+    placeJoin.textContent = "Open Location"
+    placeJoin.classList.add("open-location")
+    placeJoin.dataset.placeId = place.id
 
-     
+    placeDiv.append(placeJoin)
+    searchBody.append(placeDiv)
+}
