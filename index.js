@@ -126,7 +126,6 @@ function renderPossiblePlaces(data){
 }
 
 function renderCurrentUpload(photo){
-    
     let currentUploadContainer = document.createElement("div")
     currentUploadContainer.classList.add("current-upload")
     currentUploadContainer.dataset.photoId = photo.id
@@ -209,11 +208,28 @@ function managePhotoLook(photo){
     const photoId = photo.id
     
     const currentPhoto = document.createElement("img")
+    const centerContain = document.createElement("div")
+    const mapDiv = document.createElement("div")
+    const formContain = document.createElement("div")
+
     currentPhoto.src= photo.image_url
-    currentPhoto.style.maxWidth="450px"
-    main.append(currentPhoto)
+    currentPhoto.className = "picture"
+    currentPhoto.style.maxWidth= "450px"
+
+    formContain.className = "flexbox"
+
+    centerContain.className = "flexbox"
+    
     const form = editPhotoForm();
-    main.append(form)
+
+    mapDiv.id = "map"
+    mapDiv.classList.add("map1", "edit-map")
+
+    main.append(centerContain)
+    centerContain.append(currentPhoto)
+    centerContain.append(mapDiv)
+    main.append(formContain)
+    formContain.append(form)
     
     if (photo.longitude && photo.latitude){
         form.longitude.value = photo.longitude;
@@ -225,9 +241,7 @@ function managePhotoLook(photo){
         
     
     if (photo.edit_date){
-        
         form.date.value = photo.edit_date.split(".")[0].slice(0,-3)
-        
     }
     form.dataset.id = photoId
 }
@@ -247,7 +261,6 @@ function editPhotoForm(){
     <br>
     <label for="latitude">Latitude of Photo</label>
     <input type="text" id="latitude" name="latitude" value="" required>
-    <div id="map" class="edit-map">
     </div>
     <br>
     <label for="date">Date of Photo</label>
@@ -256,7 +269,6 @@ function editPhotoForm(){
     <input type="submit" class="edited-photo">
     `
     form.innerHTML= formBody
-    
     return form
 }
 
@@ -282,8 +294,9 @@ function goToManageScreen(data){
     const photo = document.createElement("img")
     photo.src = data.image_url
     photo.style.maxWidth = "600px";
+    photo.className = "center1"
     manageButton = document.createElement("button")
-    manageButton.classList.add("manage")
+    manageButton.classList.add("manage", "button1")
     manageButton.textContent = "Manage Photo Details"
     manageButton.dataset.id= data.id
     main.append(photo, manageButton)
