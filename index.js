@@ -198,7 +198,8 @@ function uploadPhotoLook(message){
             <br />
         </div>`
         if (message){
-            main.prepend(message)
+            let container = document.querySelector(".para")
+            container.innerHTML = message.textContent
         }
         uploadForm();
 }
