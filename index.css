@@ -278,19 +278,20 @@ html,body {
   justify-content: space-around;
 }
 
-.search-body div {
+.search-body div, .photo-container {
   margin: 30px;
   display: inline-grid;
-  max-width: 250px;
+  width: 250px;
   text-align: center;
   height: auto;
   border: solid 1px black;
   border-radius: 11px;
   box-shadow: 1px 1px black, -.2em 0 .4em rgb(101, 97, 97);
-  background: rgb(201, 188, 188);
+  background: #6aa6f8;
+  color: white;
 }
 
-.search-body div img {
+.search-body div img, .photo-container img {
   margin: 10px auto;
   display: block;
   border: .5px solid black;
@@ -312,4 +313,24 @@ html,body {
         display: block;
         bottom: 10px;
 
+}
+
+
+/* IMAGE HOVER */
+
+.search-body div img:hover {
+	transform: scale(1.5);
+  transition-duration: .3s;
+}
+
+.leaflet-container{
+  margin: 6px auto;
+}
+
+
+/* MY PHOTOS PAGE */
+
+.my-photo-page{
+  display: flex;
+  justify-content: space-around;
 }

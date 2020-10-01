@@ -411,7 +411,7 @@ function clickHandler(){
             joinedLocationRender(data, type)})
     }
 function locationSearchPage(longitude = -74, latitude = 40.730610){
-        main.innerHTML=`<div id="map" class="search">
+        main.innerHTML=`<div id="map" class="search map2">
         </div>
         <div class="search-body">
         </div>`
@@ -466,8 +466,11 @@ function myPhotoLook(){
         if (photos.length === 0){
             promptUpload()
         }else{
+            let photosContainer = document.createElement("div")
+            photosContainer.classList.add("my-photo-page")
+            main.append(photosContainer)
         for (let photo of photos){
-            main.append(renderPhotoInfo(photo))
+            photosContainer.append(renderPhotoInfo(photo))
         }}
     })
 }
@@ -724,6 +727,7 @@ function joinedLocationRender(data, type){
 function renderPhotoInfo(photo){
     let photoDiv = document.createElement("div")
     let photoImg = document.createElement("img")
+    photoDiv.classList.add("photo-container")
     photoImg.classList.add("single-photo")
     photoImg.dataset.photoId = photo.id
     photoImg.style.maxWidth="200px"
@@ -757,16 +761,8 @@ const map = (longitude, latitude, img, zoom = 13) =>{
         tileSize: 512,
         zoomOffset: -1
     }).addTo(map);
-    let imageIcon = L.icon({
-        shadowUrl: './assets/squaremarker.png',
-        iconUrl: img,
-
-        shadowSize: [75, 95], // size of the shadow
-        iconSize: [30, 47], // size of the shadow
-        shadowAnchor: [22, 94], // point of the shadow which will correspond to marker's location
-        iconAnchor: [0, 87],  // the same for the shadow
-        popupAnchor: [-3, -76] // point from which the popup should open relative to the iconAnchor
-    });
+    let imageIcon = iconSelect(img)
+    
     if (zoom != 3){
         let marker = L.marker([latitude, longitude], { icon: imageIcon });
         function markerInfo(e) {
@@ -879,4 +875,33 @@ function indiSearch(place){
 
     placeDiv.append(placeJoin)
     searchBody.append(placeDiv)
+}
+
+
+function iconSelect(img){
+    if (document.querySelector("#map").classList.contains("edit-map")) {
+        let icon = L.icon({
+            shadowUrl: './assets/squaremarker.png',
+            iconUrl: img,
+
+            shadowSize: [75, 95], // size of the shadow
+            iconSize: [30, 47], // size of the shadow
+            shadowAnchor: [22, 94], // point of the shadow which will correspond to marker's location
+            iconAnchor: [0, 87],  // the same for the shadow
+            popupAnchor: [-3, -76] // point from which the popup should open relative to the iconAnchor
+        }) 
+        return icon;
+    }else if (document.querySelector("#map").classList.contains("search")){
+    let icon = L.icon({
+        // shadowUrl: './assets/squaremarker.png',
+        iconUrl: './assets/arrowdown.png',
+
+        // shadowSize: [75, 95], // size of the shadow
+        iconSize: [50, 70], // size of the shadow
+        // shadowAnchor: [22, 94], // point of the shadow which will correspond to marker's location
+        iconAnchor: [28, 67],  // the same for the shadow
+        popupAnchor: [-3, 0] // point from which the popup should open relative to the iconAnchor
+    })
+    return icon;
+}
 }
