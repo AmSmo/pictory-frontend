@@ -354,7 +354,7 @@ function clickHandler(){
     function deleteComment(button){
         let commentId = button.previousElementSibling.dataset.commentId
         fetch("http://localhost:3000/comments/"+ commentId, {method: "DELETE"})
-        .then(button.parentElement.remove())
+        .then(button.closest("div").remove())
         
     }
        
@@ -367,7 +367,7 @@ function clickHandler(){
         fetch("http://localhost:3000/mylocations", configObj)
         .then(resp => resp.json())
             .then(data => {
-                main.innerHTML =""
+                main.innerHTML =`<div class="title">My Locations</div>`
                 let resultsContainer = document.createElement("div")
                 resultsContainer.classList.add("search-body")
                 main.append(resultsContainer)
@@ -448,7 +448,7 @@ function addCommentForm(button){
 }
 
 function myPhotoLook(){
-    main.innerHTML = ""
+    main.innerHTML = `<div class="title">My Photos</div>`
     const configObj = {
         method: "POST",
         headers: {
@@ -505,7 +505,9 @@ function renderBigPhoto(photo){
 
 function individualPhotoPage(photo){
     const photoContainer = document.createElement("div")
+    photoContainer.classList.add("solo-photo")
     const title = document.createElement("h2")
+    title.classList.add("title")
     title.textContent = photo.name
     const image = document.createElement("img")
     image.src = photo.image_url
@@ -514,12 +516,12 @@ function individualPhotoPage(photo){
     const locationButton = document.createElement("button")
     locationButton.textContent = "See Location"
     locationButton.dataset.placeId = photo.location.id
-    locationButton.classList.add("open-location")
+    locationButton.classList.add("open-location", "blue-button")
     
     caption.textContent = photo.caption
     const date = document.createElement("p")
     date.textContent= (new Date(photo.date)).toDateString()
-    const credit = document.createElement("h6")
+    const credit = document.createElement("p")
     credit.innerHTML = `Photo Credit: <strong></strong>`
     let poster = photo.posters[0]
     if (poster){
@@ -530,39 +532,47 @@ function individualPhotoPage(photo){
         if (poster.id === loggedUser){
             let deletePhoto = document.createElement("button")
             deletePhoto.dataset.photoId = photo.id
-            deletePhoto.classList.add("delete-photo")
+            deletePhoto.classList.add("delete-photo", "grey-button")
             deletePhoto.textContent = "Delete My Photo"
-            credit.append(deletePhoto)
+            credit.prepend(deletePhoto)
         }
     }else{
         const poster = "Anonymous"
     }
     photoContainer.append(title)
     photoContainer.append(image)
+    photoContainer.append(credit)
     photoContainer.append(caption)
     photoContainer.append(date)
     photoContainer.append(locationButton)
-    photoContainer.append(credit)
+    main.append(photoContainer)
+    let commentContainer = document.createElement("div")
+    commentContainer.classList.add("comment-container")
     if (photo.comments.length > 0){
         for (let comment of photo.comments){
-            photoContainer.append(renderComments(comment))}
+            commentContainer.append(renderComments(comment))}
     }else{
         let suggestion = document.createElement("div")
         suggestion.textContent = "Be the first"
-        photoContainer.append(suggestion)
+        commentContainer.append(suggestion)
     }
+    let commentTitle = document.createElement("div")
+    commentTitle.textContent = "Comments"
+    commentTitle.classList.add("title")
+    photoContainer.insertAdjacentElement("afterend", commentTitle)
     let commentButton = document.createElement("button")
     commentButton.textContent = "Add Comment"
     commentButton.classList.add("comment-on")
     commentButton.dataset.photoId = photo.id
-    photoContainer.append(commentButton)
-    main.append(photoContainer)
+    commentContainer.append(commentButton)
+    commentTitle.insertAdjacentElement("afterend", commentContainer)
 }
 
 function renderComments(comment){  
     let commentContainer = document.createElement("div")
     commentContainer.classList.add("comment")
-    let commentP = document.createElement("p")
+    let commentP = document.createElement("div")
+    commentP.classList.add("indi-comment")
     commentP.textContent =  comment.comment
     let attributedTo = document.createElement("p")
     attributedTo.textContent = comment.user.username
@@ -574,7 +584,7 @@ function renderComments(comment){
         editButton.textContent = "Edit Comment"
         editButton.classList.add("edit-comment")
         editButton.dataset.commentId = comment.id
-        commentContainer.append(editButton)
+        commentP.insertAdjacentElement("afterend", editButton)
     }
 
     return commentContainer

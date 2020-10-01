@@ -280,7 +280,7 @@ html,body {
   justify-content: space-around;
 }
 
-.search-body div, .photo-container {
+.search-body div, .photo-container{
   margin: 30px;
   display: inline-grid;
   width: 250px;
@@ -351,3 +351,69 @@ form.edit-photo {
 form.edit-photo label {
   margin-right: 8px;  
 }
+
+.title {
+  font-size: 36px;
+  text-align: center;
+}
+
+.solo-photo {
+    text-align: center;
+}
+
+
+.delete-photo, .edit-comment{
+    background-color: #04363f;
+    font-family: Montserrat;
+    border: none;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 12px;
+    border-radius: 13px;
+    margin-right: 20px;
+    height: 15px;
+    padding-top: 5px;
+}
+.edit-comment {
+  float:right;
+  padding: 3px;
+  height: auto;
+}
+.comment-container {
+    width: 600px;
+    margin: 40px auto;
+    text-align: center;
+    border: 1px solid grey;
+    min-height: 300px;
+    border-radius: 15px;
+    box-shadow: 1.5px 1.1px 1.1px 2px darkslategrey;
+    display: grid;
+}
+.comment{
+  height: auto;
+}
+
+button.comment-on {
+    position: absolute;
+    bottom: -3px;
+    height: 28px;
+    margin: 0px;
+    width: 604px;
+    justify-self: center;
+    border-radius: 0 0 18px 18px;
+    margin-left: -2px;
+    background-color: #04363f;
+    font-family: Montserrat;
+    border: none;
+    color: white;
+}
+.indi-comment {
+    border-bottom: .4px solid black;
+    background: ghostwhite;
+    text-align: left;
+    padding: 4px;
+    border-radius: 18px;
+}
+
