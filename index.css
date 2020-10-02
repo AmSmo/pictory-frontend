@@ -84,7 +84,7 @@ html,body {
         padding-bottom: 30px;
     }
 
-    .button, .upload-image, .grey-button {
+    .button, .upload-image, .grey-button, .delete-comment {
         background-color: #04363f;
         font-family: Montserrat; 
         border: none;
@@ -320,10 +320,12 @@ html,body {
 
 /* IMAGE HOVER */
 
-.search-body div img:hover {
+.search-body div img:hover, .single-photo:hover {
 	transform: scale(1.5);
   transition-duration: .5s;
 }
+
+
 
 .leaflet-container{
   margin: 6px auto;
@@ -362,7 +364,7 @@ form.edit-photo label {
 }
 
 
-.delete-photo, .edit-comment, .delete-comment{
+.delete-photo, .edit-comment{
     background-color: #04363f;
     font-family: Montserrat;
     border: none;
@@ -419,4 +421,19 @@ button.comment-on {
 
 div.comment-container > div:nth-last-child(2) {
     margin-bottom: 25px;
+}
+
+span:hover {
+  color: #4e4f50;
+}
+
+.my-locale:hover{
+  background: #053f4a;
+  
+}
+
+img.map-lady, .location-div, .button-div {
+    display: block;
+    margin: 30px auto;
+    text-align: center;
 }

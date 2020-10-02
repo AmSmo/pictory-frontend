@@ -33,7 +33,7 @@ function commentPatch(edited){
         "accepts": "application/json"},
         body: JSON.stringify({comment: edited.comment.value})
     }
-    debugger
+    
     fetch("http://localhost:3000/comments/" + edited.dataset.commentId, configObj)
         .then(renderBigPhoto(document.querySelector(".delete-photo")))
 }
@@ -157,7 +157,8 @@ function createPlaceForm(photo){
 }
 
 function renderPlace(place){
-    let currentPlace = place
+    // let headerImage = document.createElement("img")
+
     let placeDiv = document.createElement("div")
     placeDiv.dataset.placeId = place.id
     let placeImage = document.createElement("img")
@@ -436,7 +437,7 @@ function addCommentForm(button, how= "edit"){
     commentForm.dataset.photoId = button.dataset.photoId
     const formBody = `
     <textarea placeholder="Add a Comment..." name="comment" rows="4" cols="50" required></textarea>
-    <input type="submit" value="Edit comment" class="blue-button">`
+    <input type="submit" value="Add Comment" class="blue-button">`
     button.insertAdjacentElement("beforeBegin", commentForm);
     button.remove()
     commentForm.innerHTML = formBody
@@ -579,7 +580,7 @@ function renderComments(comment){
     commentP.classList.add("indi-comment")
     commentP.textContent =  comment.comment
     let attributedTo = document.createElement("p")
-    attributedTo.textContent = comment.user.username
+    attributedTo.textContent = `- ${comment.user.username}`
     attributedTo.dataset.userId = comment.user.id
     commentP.append(attributedTo)
     commentContainer.append(commentP)
@@ -699,41 +700,56 @@ function loggedIn(data){
 }
 
 function joinedLocationRender(data, type){
+    
     console.log(data)
     let photos = data.photos
     main.innerHTML= ""
     let title = document.createElement("h2")
     title.innerHTML = data.name
+    title.classList.add("title")
+    main.append(title)
+    let photoLady = document.createElement("img")
+    photoLady.src = "assets/maplady.png"
+    photoLady.style.maxWidth = "250px"
+    photoLady.classList.add("map-lady")
+    main.append(photoLady)
+    let buttonDiv = document.createElement("div")
+    buttonDiv.classList.add("button-div")
     let followButton = document.createElement("button")
     followButton.dataset.userId = loggedUser
     followButton.dataset.location = data.id
     
     if (data.users.find(e => e.id === loggedUser)){
-        followButton.classList.add("unfollow-location")
+        followButton.classList.add("unfollow-location", "grey-button")
         followButton.textContent = "Unfollow Location"
     }else{
-        followButton.classList.add("follow-location")
+        followButton.classList.add("follow-location", "grey-button")
         followButton.textContent = "Follow Location"
     }
     let backSearch = document.createElement("button")
     if (type === "mylocation"){
-        backSearch.className = "back-location"
+        backSearch.className = "back-location blue-button"
         backSearch.textContent = "Back to My Locations"
 
     }else{
-    backSearch.innerText = "Back to Search"
-    backSearch.classList.add("back-search")
-    backSearch.dataset.longitude = data.longitude
-    backSearch.dataset.latitude = data.latitude}
-    title.append(backSearch)
-    title.append(followButton)
-    let locationP = document.createElement("p")
+        backSearch.innerText = "Back to Search"
+        backSearch.classList.add("back-search", "blue-button")
+        backSearch.dataset.longitude = data.longitude
+        backSearch.dataset.latitude = data.latitude
+    }
+    photoLady.insertAdjacentElement("afterend", buttonDiv)
+    buttonDiv.append(backSearch)
+    buttonDiv.append(followButton)
+    let locationP = document.createElement("div")
     locationP.textContent = `Longitude: ${data.longitude}, Latitude: ${data.latitude}`
-    main.append(title)
+    locationP.classList.add("location-div")
     main.append(locationP)
+    let resultsContainer = document.createElement("div")
+    resultsContainer.classList.add("search-body")
+    main.append(resultsContainer)
     
     for (let photo of photos){
-        main.append(renderPhotoInfo(photo))
+        resultsContainer.append(renderPhotoInfo(photo))
     }
 
 }
@@ -797,7 +813,7 @@ const map = (longitude, latitude, img, zoom = 13) =>{
             let newLat = e.latlng["lat"]
             let newLong = e.latlng["lng"]
             let marker = L.marker([newLat, newLong], { icon: imageIcon })
-            marker.addTo(map).bindPopup(`<img src=${img} width="200px"><p>Something</p>`)
+            marker.addTo(map).bindPopup(`<img src=${img} width="200px">`)
             document.querySelector("#latitude").value = parseFloat(e.latlng["lat"].toFixed(4))
             document.querySelector("#longitude").value = parseFloat(e.latlng["lng"].toFixed(4))
             marker.addTo(map)
@@ -811,7 +827,7 @@ const map = (longitude, latitude, img, zoom = 13) =>{
                 let newLat = e.latlng["lat"]
                 let newLong = e.latlng["lng"]
                 let   marker = L.marker([newLat, newLong], { icon: imageIcon })
-                marker.addTo(map).bindPopup(`<img src=${img} width="200px"><p>Something</p>`)
+                marker.addTo(map).bindPopup(`<img src=${img} width="200px">`)
                 let queryLat = parseFloat(e.latlng["lat"].toFixed(4))
                 let queryLng = parseFloat(e.latlng["lng"].toFixed(4))
                 marker.addTo(map)
