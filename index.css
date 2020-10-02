@@ -11,6 +11,8 @@ html,body {
   height: 500px;
 }
 
+
+
 #background {
     height: 100vh;
     width: 100vw;
@@ -36,6 +38,10 @@ html,body {
       padding: 0px 25px 25px 50px;
     }
     
+    .current-upload{
+      margin: 5px auto;
+      text-align: center;
+    }
     .header {
         padding: 10px;
         text-align: left;
@@ -321,8 +327,8 @@ html,body {
 /* IMAGE HOVER */
 
 .search-body div img:hover, .single-photo:hover {
-	transform: scale(1.5);
-  transition-duration: .5s;
+	transform: scale(2);
+  transition-duration: .75s;
 }
 
 
@@ -335,8 +341,10 @@ html,body {
 /* MY PHOTOS PAGE */
 
 .my-photo-page{
-  display: flex;
+  display: block;
   justify-content: space-around;
+  margin: 10px 100px;
+  text-align: center
 }
 
 /* UPLOAD PAGE */
@@ -432,7 +440,7 @@ span:hover {
   
 }
 
-img.map-lady, .location-div, .button-div {
+.map-lady, .location-div, .button-div {
     display: block;
     margin: 30px auto;
     text-align: center;

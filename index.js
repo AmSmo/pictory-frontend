@@ -118,8 +118,11 @@ function renderPossiblePlaces(data){
         let places = data.places
         main.innerHTML=""
         renderCurrentUpload(photo)
+        let searchContainer = document.createElement("div")
+        searchContainer.classList.add("search-body")
+        main.append(searchContainer)
         for (let place of places){
-            renderPlace(place)
+            renderPlace(place, "search")
         }
     ;
     }
@@ -132,9 +135,10 @@ function renderCurrentUpload(photo){
     let currentImage = document.createElement("img")
     currentImage.style.maxWidth = "150px"
     currentImage.src = photo.image_url
-    let currentName = document.createElement("h3")
+    let currentName = document.createElement("div")
     currentName.textContent = `Adding Photo: ${photo.name}`
-    let currentLocation = document.createElement("p")
+    // currentName.classList.add("")
+    let currentLocation = document.createElement("div")
     currentLocation.textContent = `Longitude: ${photo.longitude}, Latitude: ${photo.latitude}`
     currentUploadContainer.append(currentImage)
     currentUploadContainer.append(currentName)
@@ -147,16 +151,21 @@ function createPlaceForm(photo){
     let form = document.createElement("form")
     form.classList.add("new-location")
     let formBody = `
+    <div class="map-lady">
     <label for="place-name">Location Name</label>
     <input type="text" id="place-name" name="name" required>
     <input type="hidden" name="longitude" value=${photo.longitude}>
     <input type="hidden" name="latitude" value=${photo.latitude}>
-    <input type="submit" value="Add Location" class="add-location">`
+    </div>
+    <div class="button-div">
+        <input type="submit" value="Add Location" class="add-location blue-button">
+    </div>`
+
     form.innerHTML= formBody
     return form
 }
 
-function renderPlace(place){
+function renderPlace(place, type){
     // let headerImage = document.createElement("img")
 
     let placeDiv = document.createElement("div")
@@ -174,10 +183,14 @@ function renderPlace(place){
     placeDiv.append(placeLocation)
     let placeJoin = document.createElement("button")
     placeJoin.textContent = "Join this Location"
-    placeJoin.classList.add("join-location")
+    placeJoin.classList.add("join-location", "blue-button")
     placeJoin.dataset.placeId = place.id
     placeDiv.append(placeJoin)
-    main.append(placeDiv)
+    if (type ==="search"){
+        let newStuff = document.querySelector(".search-body")
+        newStuff.append(placeDiv)
+    }else{
+    main.append(placeDiv)}
 }
 
 function uploadPhotoLook(message){
@@ -479,13 +492,17 @@ function myPhotoLook(){
 }
 
 function promptUpload(){
-    let prompt = document.createElement("H2")
+    let prompt = document.createElement("div")
+    prompt.classList.add("title")
     prompt.textContent = "You don't seem to have any photos, might we suggest you add some?"
+    let buttonContainer = document.createElement("div")
+    buttonContainer.classList.add("button-div")
     let uploadButton = document.createElement("button")
     uploadButton.textContent = "Upload"
-    uploadButton.classList.add("upload-page")
+    uploadButton.classList.add("upload-page", "blue-button")
     main.append(prompt)
-    main.append(uploadButton)
+    buttonContainer.append(uploadButton)
+    main.append(buttonContainer)
 }
 
 function logout(){
@@ -702,7 +719,7 @@ function loggedIn(data){
 function joinedLocationRender(data, type){
     
     console.log(data)
-    let photos = data.photos
+    let photos = data.photo_order
     main.innerHTML= ""
     let title = document.createElement("h2")
     title.innerHTML = data.name
@@ -870,7 +887,19 @@ function renderMylocation(data){
     let searchBody = document.querySelector(".search-body")
     searchBody.innerHTML = ""
     if (data.length === 0){
-        searchBody.innerHTML = "<h2>No Results Found</h2>"
+        let divError = document.createElement("div")
+        divError.classList.add("title")
+        divError.textContent = "No Results Found.Let's Find Some!"
+        searchBody.insertAdjacentElement("beforebegin", divError)
+        // searchBody.innerHTML = "<div class='title'>No Results Found. Let's Find Some!</div>"
+        let buttonDiv = document.createElement("div")
+        buttonDiv.classList.add("button-div")
+        let searchButton = document.createElement("button")
+        searchButton.classList.add("blue-button", "location-search")
+        searchButton.textContent = "Search for Locations"
+        buttonDiv.append(searchButton)
+        searchBody.insertAdjacentElement("beforebegin", buttonDiv)
+
     }
     
     for (let place of data) {
