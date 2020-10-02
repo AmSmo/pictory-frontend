@@ -19,7 +19,7 @@ submitHandler = () => document.addEventListener("submit", e =>{
     }else if(e.target.classList.contains("new-location")){
         newLocation(e.target)
     } else if (e.target.classList.contains("comment-form")) {
-        addComment(e.target)
+        addComment(e.target, "add")
     } else if (e.target.classList.contains("edit-comment-form")) {
         commentPatch(e.target)
     } 
@@ -33,9 +33,9 @@ function commentPatch(edited){
         "accepts": "application/json"},
         body: JSON.stringify({comment: edited.comment.value})
     }
-    
+    debugger
     fetch("http://localhost:3000/comments/" + edited.dataset.commentId, configObj)
-        .then(renderBigPhoto(edited.parentElement.nextElementSibling))
+        .then(renderBigPhoto(document.querySelector(".delete-photo")))
 }
 function addComment(form){
     let photo_id = form.dataset.photoId
@@ -429,22 +429,24 @@ function editCommentForm(button){
     commentDiv.remove()
 }
 
-function addCommentForm(button){
+function addCommentForm(button, how= "edit"){
     
     const commentForm = document.createElement("form")
     commentForm.classList.add("comment-form")
     commentForm.dataset.photoId = button.dataset.photoId
     const formBody = `
     <textarea placeholder="Add a Comment..." name="comment" rows="4" cols="50" required></textarea>
-    <input type="submit" value="comment">`
-
-    commentForm.innerHTML = formBody
-    const deleteButton = document.createElement("button")
-    deleteButton.classList.add("delete-comment")
-    deleteButton.textContent = "Delete Comment"
+    <input type="submit" value="Edit comment" class="blue-button">`
     button.insertAdjacentElement("beforeBegin", commentForm);
-    commentForm.insertAdjacentElement("afterend", deleteButton)
     button.remove()
+    commentForm.innerHTML = formBody
+    if (how === "edit"){
+        const deleteButton = document.createElement("button")
+        deleteButton.classList.add("delete-comment")
+        deleteButton.textContent = "Delete Comment"
+        commentForm.insertAdjacentElement("afterend", deleteButton)
+        
+        }
 }
 
 function myPhotoLook(){
@@ -497,6 +499,7 @@ function logout(){
 
 function renderBigPhoto(photo){
     main.innerHTML = ""
+    
     const photoId = photo.dataset.photoId
     fetch(`http://localhost:3000/photos/${photoId}`)
     .then(resp => resp.json())
@@ -504,6 +507,7 @@ function renderBigPhoto(photo){
 }
 
 function individualPhotoPage(photo){
+    
     const photoContainer = document.createElement("div")
     photoContainer.classList.add("solo-photo")
     const title = document.createElement("h2")

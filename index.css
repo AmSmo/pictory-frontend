@@ -362,7 +362,7 @@ form.edit-photo label {
 }
 
 
-.delete-photo, .edit-comment{
+.delete-photo, .edit-comment, .delete-comment{
     background-color: #04363f;
     font-family: Montserrat;
     border: none;
@@ -376,7 +376,7 @@ form.edit-photo label {
     height: 15px;
     padding-top: 5px;
 }
-.edit-comment {
+.edit-comment, .delete-comment {
   float:right;
   padding: 3px;
   height: auto;
@@ -417,3 +417,6 @@ button.comment-on {
     border-radius: 18px;
 }
 
+div.comment-container > div:nth-last-child(2) {
+    margin-bottom: 25px;
+}
